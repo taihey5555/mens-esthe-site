@@ -36,6 +36,7 @@
   1) `therapists.booking_url` があればそれへ
   2) なければ `site_settings.global_booking_url` へ
 - サイト内で予約データは保存しない（予約テーブルなし）
+- `site_settings` に管理用の機密設定（鍵/内部連絡先など）を足さない。追加が必要になったら「公開用」と「管理用」を分離（別テーブル or 公開ビュー）する。
 
 ## Data Model (MVP)
 - rooms（ルーム/エリア/アクセス文）
@@ -43,11 +44,17 @@
 - shifts（出勤：therapist × room × start/end）
 - courses（料金コース）
 - site_settings（サイト共通設定：外部予約URL、SNS等）
+- profiles（管理者判定用：is_admin）
 
 ## Security / RLS Policy (High Level)
 - Public（匿名）に許可するのは原則 `SELECT` のみ（表示に必要なテーブル）
 - `INSERT/UPDATE/DELETE` は管理者のみ
 - Service Role をフロントエンドに置かない（Edge/Server専用）
+- RLSだけでなく Postgres権限（GRANT）も必要：`GRANT USAGE ON SCHEMA public` と `GRANT SELECT ON ...` を anon/authenticated に付与する
+
+## Admin Bootstrap (First Admin)
+- 最初の管理者は「Authでログインユーザーを作成 → SQLで profiles.is_admin=true を付与」で作る
+- フロントから service_role を使って管理者化しない（必ずSQL/サーバー側で行う）
 
 ## Development Workflow (Must)
 - DB変更は必ず `supabase/migrations/*` にSQLとして残し、Gitにコミットする（SQL Editor直打ち運用を避ける）
@@ -55,8 +62,8 @@
 - 迷ったら「MVPにあるか？」を最優先で判断。MVP外の機能は追加しない
 
 ## Coding Style
-- App Router: `src/app/*`
-- Components: `src/components/*`
-- Supabase client: `src/lib/supabase/*`
+- App Router: `app/*`（※プロジェクト構成に合わせる）
+- Components: `components/*` または `src/components/*`（既存に合わせる）
+- Supabase client: `lib/supabase/*`
 - 型は可能な範囲で明示し、null/undefinedを厳密に扱う
 - UIはまず80点で良い（機能とデータ整合を優先）。磨き込みは後工程
