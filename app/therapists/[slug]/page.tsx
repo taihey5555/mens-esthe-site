@@ -107,7 +107,7 @@ export default async function TherapistDetailPage({
               )}
               {therapist.tags?.length ? (
                 <div className="flex flex-wrap gap-2">
-                  {therapist.tags.map((tag) => (
+                  {(therapist.tags as string[]).map((tag: string) => (
                     <span
                       key={tag}
                       className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600"
