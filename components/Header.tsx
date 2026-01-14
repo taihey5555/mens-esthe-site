@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 
 const navLinks = [
   { href: "/", label: "トップ" },
@@ -11,13 +11,20 @@ const navLinks = [
 ]
 
 export default async function Header() {
-  const { data, error } = await supabase
-    .from("site_settings")
-    .select("global_booking_url")
-    .limit(1)
-    .single()
+  let bookingUrl: string | null = null
 
-  const bookingUrl = error ? null : data?.global_booking_url ?? null
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("global_booking_url")
+      .limit(1)
+      .single()
+
+    bookingUrl = error ? null : data?.global_booking_url ?? null
+  } catch {
+    bookingUrl = null
+  }
 
   return (
     <header className="border-b border-zinc-200 bg-white">

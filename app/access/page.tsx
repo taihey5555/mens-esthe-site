@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 
 type RoomRow = {
   id: string
@@ -9,6 +9,7 @@ type RoomRow = {
 }
 
 export default async function AccessPage() {
+  const supabase = getSupabase()
   const { data: rooms } = await supabase
     .from("rooms")
     .select("id,name,area,access_note,sort_order")

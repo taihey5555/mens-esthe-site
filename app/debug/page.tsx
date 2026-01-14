@@ -1,16 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabase } from '@/lib/supabase/client'
 
 export default function DebugPage() {
   const [result, setResult] = useState<any>(null)
 
   useEffect(() => {
-    (async () => {
-      // テーブルがまだ無いならここは失敗してOK（接続自体はできてる）
-      const { data, error } = await supabase.from('site_settings').select('*').limit(1)
-      setResult({ data, error })
+    ;(async () => {
+      try {
+        const supabase = getSupabase()
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('*')
+          .limit(1)
+        setResult({ data, error })
+      } catch (error) {
+        setResult({ data: null, error: String(error) })
+      }
     })()
   }, [])
 

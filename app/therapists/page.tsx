@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 
 type TherapistCard = {
   id: string
@@ -13,6 +13,7 @@ type TherapistCard = {
 }
 
 export default async function TherapistsPage() {
+  const supabase = getSupabase()
   const [{ data: therapists }, { data: settings }] = await Promise.all([
     supabase
       .from("therapists")

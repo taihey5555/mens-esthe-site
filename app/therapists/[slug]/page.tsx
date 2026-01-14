@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
 
 type TherapistDetail = {
@@ -32,6 +32,7 @@ export default async function TherapistDetailPage({
 }: {
   params: { slug: string }
 }) {
+  const supabase = getSupabase()
   const todayStartUtc = getTodayStartUtcISOString()
 
   const therapistQuery = supabase

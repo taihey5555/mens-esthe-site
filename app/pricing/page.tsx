@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 
 type CourseRow = {
   id: string
@@ -9,6 +9,7 @@ type CourseRow = {
 }
 
 export default async function PricingPage() {
+  const supabase = getSupabase()
   const { data: courses } = await supabase
     .from("courses")
     .select("id,name,duration_min,price,sort_order")

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { supabase } from "@/lib/supabase/client"
+import { getSupabase } from "@/lib/supabase/client"
 import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
 
 type ShiftRow = {
@@ -31,6 +31,7 @@ export default async function SchedulePage({
 }: {
   searchParams?: { room?: string }
 }) {
+  const supabase = getSupabase()
   const todayStartUtc = getTodayStartUtcISOString()
   const selectedRoomId = searchParams?.room ?? "all"
 
