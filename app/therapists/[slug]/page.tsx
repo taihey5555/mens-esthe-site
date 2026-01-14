@@ -1,0 +1,184 @@
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
+import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
+
+type TherapistDetail = {
+  id: string
+  name: string
+  slug: string
+  main_image_url: string | null
+  profile_text: string | null
+  booking_url: string | null
+  tags: string[]
+  is_newface: boolean
+  sns_urls: Record<string, string> | null
+}
+
+type ShiftRow = {
+  id: string
+  start_at: string
+  end_at: string
+  note: string | null
+  room: {
+    id: string
+    name: string
+    area: string | null
+  } | null
+}
+
+export default async function TherapistDetailPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const todayStartUtc = getTodayStartUtcISOString()
+
+  const therapistQuery = supabase
+    .from("therapists")
+    .select(
+      "id,name,slug,main_image_url,profile_text,booking_url,tags,is_newface,sns_urls"
+    )
+    .eq("slug", params.slug)
+    .maybeSingle()
+
+  const settingsQuery = supabase
+    .from("site_settings")
+    .select("global_booking_url")
+    .limit(1)
+
+  const [{ data: therapist }, { data: settings }] = await Promise.all([
+    therapistQuery,
+    settingsQuery,
+  ])
+
+  if (!therapist) {
+    notFound()
+  }
+
+  const { data: shifts } = await supabase
+    .from("shifts")
+    .select("id,start_at,end_at,note,room:rooms(id,name,area)")
+    .eq("therapist_id", therapist.id)
+    .gte("start_at", todayStartUtc)
+    .order("start_at", { ascending: true })
+
+  const globalBookingUrl = settings?.[0]?.global_booking_url ?? null
+  const bookingUrl = therapist.booking_url ?? globalBookingUrl
+
+  return (
+    <main className="min-h-screen bg-zinc-50 px-6 py-10">
+      <div className="mx-auto w-full max-w-4xl space-y-8">
+        <Link href="/therapists" className="text-sm text-zinc-600 underline">
+          Back to list
+        </Link>
+
+        <section className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 md:flex-row">
+            <div className="h-40 w-40 overflow-hidden rounded-md bg-zinc-100">
+              {therapist.main_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={therapist.main_image_url}
+                  alt={therapist.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
+                  No image
+                </div>
+              )}
+            </div>
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-semibold text-zinc-900">
+                  {therapist.name}
+                </h1>
+                {therapist.is_newface && (
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                    New
+                  </span>
+                )}
+              </div>
+              {therapist.profile_text && (
+                <p className="text-sm text-zinc-600">
+                  {therapist.profile_text}
+                </p>
+              )}
+              {therapist.tags?.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {therapist.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              <div>
+                {bookingUrl ? (
+                  <a
+                    href={bookingUrl}
+                    className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Book
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="cursor-not-allowed rounded-md bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-500"
+                  >
+                    Booking unavailable
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Upcoming shifts
+          </h2>
+          <div className="space-y-3">
+            {(shifts as ShiftRow[] | null)?.map((shift) => (
+              <div
+                key={shift.id}
+                className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-semibold text-zinc-900">
+                      {formatJstDateTime(shift.start_at)}
+                    </div>
+                    <div className="text-sm text-zinc-600">
+                      {formatJstTime(shift.start_at)} -{" "}
+                      {formatJstTime(shift.end_at)}
+                    </div>
+                  </div>
+                  <div className="text-sm text-zinc-600">
+                    {shift.room?.name ?? "Room TBD"}
+                    {shift.room?.area ? ` / ${shift.room.area}` : ""}
+                  </div>
+                </div>
+                {shift.note && (
+                  <div className="mt-2 text-xs text-zinc-500">{shift.note}</div>
+                )}
+              </div>
+            ))}
+            {!shifts?.length && (
+              <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
+                No upcoming shifts.
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  )
+}
