@@ -120,6 +120,7 @@ export const publicText = {
     roomTbd: "未定",
     therapistTbd: "担当未定",
     loading: "読み込み中...",
+    noData: "?????????",
     apply: "適用",
     allRooms: "全てのルーム",
     filterByRoom: "ルームで絞り込み",
