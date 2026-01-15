@@ -1,18 +1,19 @@
 import type { Metadata } from "next"
 import { getSupabase } from "@/lib/supabase/client"
+import { publicText } from "@/lib/i18n/ja"
 
 export const metadata: Metadata = {
-  title: "Access | Mens Esthe Official Site",
-  description: "Access information for treatment rooms.",
+  title: publicText.metadata.access.title,
+  description: publicText.metadata.access.description,
   openGraph: {
-    title: "Access | Mens Esthe Official Site",
-    description: "Access information for treatment rooms.",
+    title: publicText.metadata.access.title,
+    description: publicText.metadata.access.description,
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Access | Mens Esthe Official Site",
-    description: "Access information for treatment rooms.",
+    title: publicText.metadata.access.title,
+    description: publicText.metadata.access.description,
   },
 }
 
@@ -35,9 +36,11 @@ export default async function AccessPage() {
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">Access</h1>
+          <h1 className="text-2xl font-semibold text-zinc-900">
+            {publicText.sections.access}
+          </h1>
           <p className="text-sm text-zinc-600">
-            Room locations and access notes.
+            ルームの場所とアクセス方法をご案内します。
           </p>
         </header>
 
@@ -62,7 +65,7 @@ export default async function AccessPage() {
           ))}
           {!rooms?.length && (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-              No rooms available yet.
+              ルーム情報がありません。
             </div>
           )}
         </div>

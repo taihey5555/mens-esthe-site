@@ -1,18 +1,19 @@
 import type { Metadata } from "next"
 import { getSupabase } from "@/lib/supabase/client"
+import { publicText } from "@/lib/i18n/ja"
 
 export const metadata: Metadata = {
-  title: "Pricing | Mens Esthe Official Site",
-  description: "Course pricing and duration details.",
+  title: publicText.metadata.pricing.title,
+  description: publicText.metadata.pricing.description,
   openGraph: {
-    title: "Pricing | Mens Esthe Official Site",
-    description: "Course pricing and duration details.",
+    title: publicText.metadata.pricing.title,
+    description: publicText.metadata.pricing.description,
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Pricing | Mens Esthe Official Site",
-    description: "Course pricing and duration details.",
+    title: publicText.metadata.pricing.title,
+    description: publicText.metadata.pricing.description,
   },
 }
 
@@ -35,9 +36,11 @@ export default async function PricingPage() {
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">Pricing</h1>
+          <h1 className="text-2xl font-semibold text-zinc-900">
+            {publicText.sections.pricing}
+          </h1>
           <p className="text-sm text-zinc-600">
-            Course durations and pricing.
+            コース料金と施術時間のご案内です。
           </p>
         </header>
 
@@ -52,17 +55,17 @@ export default async function PricingPage() {
                   {course.name}
                 </div>
                 <div className="text-sm text-zinc-600">
-                  {course.duration_min} min
+                  {course.duration_min} 分
                 </div>
               </div>
               <div className="text-base font-semibold text-zinc-900">
-                {course.price.toLocaleString()} JPY
+                {course.price.toLocaleString()} {publicText.common.priceSuffix}
               </div>
             </div>
           ))}
           {!courses?.length && (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-              No courses available yet.
+              料金情報がありません。
             </div>
           )}
         </div>

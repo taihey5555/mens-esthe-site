@@ -1,28 +1,29 @@
 import type { Metadata } from "next"
+import { publicText } from "@/lib/i18n/ja"
 
 export const metadata: Metadata = {
-  title: "Recruit | Mens Esthe Official Site",
-  description: "Recruitment information for therapists.",
+  title: publicText.metadata.recruit.title,
+  description: publicText.metadata.recruit.description,
   openGraph: {
-    title: "Recruit | Mens Esthe Official Site",
-    description: "Recruitment information for therapists.",
+    title: publicText.metadata.recruit.title,
+    description: publicText.metadata.recruit.description,
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Recruit | Mens Esthe Official Site",
-    description: "Recruitment information for therapists.",
+    title: publicText.metadata.recruit.title,
+    description: publicText.metadata.recruit.description,
   },
 }
 
 export default function RecruitPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-bold">求人</h1>
+      <h1 className="text-2xl font-bold">{publicText.sections.recruit}</h1>
 
-      <div className="mt-6 space-y-4 text-sm leading-6">
+      <div className="mt-6 space-y-4 text-sm leading-6 text-zinc-700">
         <p>
-          一緒に働いてくれるセラピストさんを募集しています。未経験の方もご相談ください。
+          一緒に働いてくれるセラピストを募集しています。未経験の方もご相談ください。
         </p>
 
         <ul className="list-disc pl-5">

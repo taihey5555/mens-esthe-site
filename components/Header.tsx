@@ -1,13 +1,14 @@
 import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
+import { publicText } from "@/lib/i18n/ja"
 
 const navLinks = [
   { href: "/", label: "トップ" },
-  { href: "/therapists", label: "セラピスト" },
-  { href: "/schedule", label: "スケジュール" },
-  { href: "/pricing", label: "料金" },
-  { href: "/access", label: "アクセス" },
-  { href: "/recruit", label: "求人" },
+  { href: "/therapists", label: publicText.sections.therapists },
+  { href: "/schedule", label: publicText.sections.schedule },
+  { href: "/pricing", label: publicText.sections.pricing },
+  { href: "/access", label: publicText.sections.access },
+  { href: "/recruit", label: publicText.sections.recruit },
 ]
 
 export default async function Header() {
@@ -43,7 +44,7 @@ export default async function Header() {
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
           >
-            今すぐ予約
+            {publicText.ctaBooking}
           </a>
         ) : (
           <button
@@ -51,7 +52,7 @@ export default async function Header() {
             disabled
             className="inline-flex items-center justify-center rounded-md bg-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-500"
           >
-            予約準備中
+            {publicText.ctaBookingDisabled}
           </button>
         )}
       </div>

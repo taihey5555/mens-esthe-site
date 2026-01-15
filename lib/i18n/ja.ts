@@ -91,3 +91,73 @@ export const adminText = {
     forbiddenBody: "このページにアクセスする権限がありません。",
   },
 } as const
+
+export const publicText = {
+  shopName: "メンズエステ Luna",
+  heroCatch: "心と身体をほどく、上質な癒しの時間。",
+  heroNote: "当店は外部予約のみ対応です。",
+  ctaBooking: "今すぐ予約",
+  ctaBookingDisabled: "予約準備中",
+  ctaSeeTherapists: "セラピスト一覧へ",
+  ctaSeePricing: "料金を見る",
+  ctaSeeAccess: "アクセスを見る",
+  ctaSeeRecruit: "求人を見る",
+  sections: {
+    notice: "お知らせ",
+    therapists: "セラピスト",
+    pricing: "料金",
+    access: "アクセス",
+    recruit: "求人",
+    schedule: "出勤情報",
+  },
+  common: {
+    noImage: "画像なし",
+    bookingUnavailable: "予約準備中",
+    viewDetails: "詳細を見る",
+    backToList: "一覧に戻る",
+    upcomingShifts: "直近の出勤",
+    noUpcomingShifts: "直近の出勤がありません。",
+    roomTbd: "未定",
+    therapistTbd: "担当未定",
+    loading: "読み込み中...",
+    apply: "適用",
+    allRooms: "全てのルーム",
+    filterByRoom: "ルームで絞り込み",
+    priceSuffix: "円",
+  },
+  messages: {
+    fetchFailed: "データ取得に失敗しました。",
+    retryLater: "時間をおいて再度お試しください。",
+    shiftsFetchFailed: "出勤情報の取得に失敗しました。",
+  },
+  metadata: {
+    home: {
+      title: "トップ | メンズエステ Luna",
+      description: "セラピスト、出勤、料金、アクセスを掲載しています。",
+    },
+    therapists: {
+      title: "セラピスト一覧 | メンズエステ Luna",
+      description: "在籍セラピストの一覧と外部予約リンク。",
+    },
+    schedule: {
+      title: "出勤スケジュール | メンズエステ Luna",
+      description: "本日以降の出勤スケジュール一覧。",
+    },
+    pricing: {
+      title: "料金 | メンズエステ Luna",
+      description: "コース料金と施術時間のご案内。",
+    },
+    access: {
+      title: "アクセス | メンズエステ Luna",
+      description: "施術ルームへのアクセス案内。",
+    },
+    recruit: {
+      title: "求人 | メンズエステ Luna",
+      description: "セラピスト求人情報。",
+    },
+    therapistDetail: {
+      titlePrefix: "セラピスト | メンズエステ Luna",
+      description: "セラピスト詳細と直近の出勤情報。",
+    },
+  },
+} as const

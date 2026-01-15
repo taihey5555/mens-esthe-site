@@ -1,10 +1,31 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getSupabase } from "@/lib/supabase/client"
-import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
+import {
+  formatJstDateTime,
+  formatJstTime,
+  getTodayStartUtcISOString,
+} from "@/lib/time"
+import { publicText } from "@/lib/i18n/ja"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
+
+export const metadata: Metadata = {
+  title: publicText.metadata.therapistDetail.titlePrefix,
+  description: publicText.metadata.therapistDetail.description,
+  openGraph: {
+    title: publicText.metadata.therapistDetail.titlePrefix,
+    description: publicText.metadata.therapistDetail.description,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: publicText.metadata.therapistDetail.titlePrefix,
+    description: publicText.metadata.therapistDetail.description,
+  },
+}
 
 type TherapistDetail = {
   id: string
@@ -55,10 +76,7 @@ export default async function TherapistDetailPage({
   const [
     { data: therapist, error: therapistError },
     { data: settings, error: settingsError },
-  ] = await Promise.all([
-    therapistQuery,
-    settingsQuery,
-  ])
+  ] = await Promise.all([therapistQuery, settingsQuery])
 
   if (therapistError) {
     console.error("Therapist detail fetch failed", {
@@ -69,9 +87,9 @@ export default async function TherapistDetailPage({
       <main className="min-h-screen bg-zinc-50 px-6 py-10">
         <div className="mx-auto w-full max-w-3xl space-y-4 rounded-lg border border-red-200 bg-white p-6 text-sm text-red-700 shadow-sm">
           <h1 className="text-lg font-semibold text-red-700">
-            データ取得に失敗しました
+            {publicText.messages.fetchFailed}
           </h1>
-          <p>時間をおいて再度お試しください。</p>
+          <p>{publicText.messages.retryLater}</p>
         </div>
       </main>
     )
@@ -108,7 +126,7 @@ export default async function TherapistDetailPage({
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
       <div className="mx-auto w-full max-w-4xl space-y-8">
         <Link href="/therapists" className="text-sm text-zinc-600 underline">
-          Back to list
+          {publicText.common.backToList}
         </Link>
 
         <section className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
@@ -123,7 +141,7 @@ export default async function TherapistDetailPage({
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
-                  No image
+                  {publicText.common.noImage}
                 </div>
               )}
             </div>
@@ -134,7 +152,7 @@ export default async function TherapistDetailPage({
                 </h1>
                 {therapist.is_newface && (
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                    New
+                    新人
                   </span>
                 )}
               </div>
@@ -163,7 +181,7 @@ export default async function TherapistDetailPage({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Book
+                    {publicText.ctaBooking}
                   </a>
                 ) : (
                   <button
@@ -171,7 +189,7 @@ export default async function TherapistDetailPage({
                     disabled
                     className="cursor-not-allowed rounded-md bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-500"
                   >
-                    Booking unavailable
+                    {publicText.common.bookingUnavailable}
                   </button>
                 )}
               </div>
@@ -181,11 +199,11 @@ export default async function TherapistDetailPage({
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-900">
-            Upcoming shifts
+            {publicText.common.upcomingShifts}
           </h2>
           {shiftsError && (
             <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-              出勤情報の取得に失敗しました。
+              {publicText.messages.shiftsFetchFailed}
             </div>
           )}
           <div className="space-y-3">
@@ -205,7 +223,7 @@ export default async function TherapistDetailPage({
                     </div>
                   </div>
                   <div className="text-sm text-zinc-600">
-                    {shift.room?.name ?? "Room TBD"}
+                    {shift.room?.name ?? publicText.common.roomTbd}
                     {shift.room?.area ? ` / ${shift.room.area}` : ""}
                   </div>
                 </div>
@@ -216,7 +234,7 @@ export default async function TherapistDetailPage({
             ))}
             {!shifts?.length && (
               <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-                No upcoming shifts.
+                {publicText.common.noUpcomingShifts}
               </div>
             )}
           </div>

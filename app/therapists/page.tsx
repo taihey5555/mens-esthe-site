@@ -1,19 +1,20 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
+import { publicText } from "@/lib/i18n/ja"
 
 export const metadata: Metadata = {
-  title: "Therapists | Mens Esthe Official Site",
-  description: "Therapist list and external booking links.",
+  title: publicText.metadata.therapists.title,
+  description: publicText.metadata.therapists.description,
   openGraph: {
-    title: "Therapists | Mens Esthe Official Site",
-    description: "Therapist list and external booking links.",
+    title: publicText.metadata.therapists.title,
+    description: publicText.metadata.therapists.description,
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Therapists | Mens Esthe Official Site",
-    description: "Therapist list and external booking links.",
+    title: publicText.metadata.therapists.title,
+    description: publicText.metadata.therapists.description,
   },
 }
 
@@ -45,9 +46,7 @@ export default async function TherapistsPage() {
       .select(
         "id,name,slug,main_image_url,profile_text,booking_url,sort_order,is_newface,is_active"
       )
-      // 公開一覧なので is_active=true のみ
       .eq("is_active", true)
-      // 並びを安定させる
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true }),
     supabase.from("site_settings").select("global_booking_url").limit(1),
@@ -56,7 +55,6 @@ export default async function TherapistsPage() {
   const globalBookingUrl =
     (settings as SiteSettingsRow[] | null)?.[0]?.global_booking_url ?? null
 
-  // ここが一番大事：RLSや権限で落ちてる場合はエラーが出る
   const debugInfo =
     therapistsError || settingsError
       ? {
@@ -70,14 +68,15 @@ export default async function TherapistsPage() {
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
       <div className="mx-auto w-full max-w-5xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">Therapists</h1>
+          <h1 className="text-2xl font-semibold text-zinc-900">
+            {publicText.sections.therapists}
+          </h1>
           <p className="text-sm text-zinc-600">
-            Browse available therapists and book via external link.
+            在籍セラピストと予約リンクをご確認ください。
           </p>
 
-          {/* デバッグ（本番で邪魔なら後で消してOK） */}
           <div className="text-xs text-zinc-500">
-            count: {therapists?.length ?? 0}
+            件数: {therapists?.length ?? 0}
           </div>
           {debugInfo && (
             <pre className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-white p-3 text-xs text-zinc-600">
@@ -106,7 +105,7 @@ export default async function TherapistsPage() {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
-                        No image
+                        {publicText.common.noImage}
                       </div>
                     )}
                   </div>
@@ -122,7 +121,7 @@ export default async function TherapistsPage() {
 
                       {therapist.is_newface && (
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                          New
+                          新人
                         </span>
                       )}
                     </div>
@@ -141,7 +140,7 @@ export default async function TherapistsPage() {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Book
+                          {publicText.ctaBooking}
                         </a>
                       ) : (
                         <button
@@ -149,7 +148,7 @@ export default async function TherapistsPage() {
                           disabled
                           className="cursor-not-allowed rounded-md bg-zinc-200 px-3 py-2 text-sm font-medium text-zinc-500"
                         >
-                          Booking unavailable
+                          {publicText.common.bookingUnavailable}
                         </button>
                       )}
 
@@ -157,7 +156,7 @@ export default async function TherapistsPage() {
                         href={`/therapists/${therapist.slug}`}
                         className="text-sm font-medium text-zinc-700 underline"
                       >
-                        View details
+                        {publicText.common.viewDetails}
                       </Link>
                     </div>
                   </div>
@@ -168,7 +167,7 @@ export default async function TherapistsPage() {
 
           {!therapists?.length && (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-              No therapists available yet.
+              セラピストの情報がありません。
             </div>
           )}
         </div>
