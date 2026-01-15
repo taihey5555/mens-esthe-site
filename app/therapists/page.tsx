@@ -3,17 +3,17 @@ import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
 
 export const metadata: Metadata = {
-  title: "セラピスト一覧 | メンズエステ公式サイト",
-  description: "在籍セラピスト一覧と外部予約リンク。",
+  title: "Therapists | Mens Esthe Official Site",
+  description: "Therapist list and external booking links.",
   openGraph: {
-    title: "セラピスト一覧 | メンズエステ公式サイト",
-    description: "在籍セラピスト一覧と外部予約リンク。",
+    title: "Therapists | Mens Esthe Official Site",
+    description: "Therapist list and external booking links.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "セラピスト一覧 | メンズエステ公式サイト",
-    description: "在籍セラピスト一覧と外部予約リンク。",
+    title: "Therapists | Mens Esthe Official Site",
+    description: "Therapist list and external booking links.",
   },
 }
 

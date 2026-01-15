@@ -1,4 +1,20 @@
+import type { Metadata } from "next"
 import { getSupabase } from "@/lib/supabase/client"
+
+export const metadata: Metadata = {
+  title: "Access | Mens Esthe Official Site",
+  description: "Access information for treatment rooms.",
+  openGraph: {
+    title: "Access | Mens Esthe Official Site",
+    description: "Access information for treatment rooms.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Access | Mens Esthe Official Site",
+    description: "Access information for treatment rooms.",
+  },
+}
 
 type RoomRow = {
   id: string

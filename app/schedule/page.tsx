@@ -1,6 +1,22 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
 import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
+
+export const metadata: Metadata = {
+  title: "Schedule | Mens Esthe Official Site",
+  description: "Upcoming shifts from today.",
+  openGraph: {
+    title: "Schedule | Mens Esthe Official Site",
+    description: "Upcoming shifts from today.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Schedule | Mens Esthe Official Site",
+    description: "Upcoming shifts from today.",
+  },
+}
 
 type ShiftRow = {
   id: string
