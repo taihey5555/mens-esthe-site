@@ -1,4 +1,20 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "トップ | メンズエステ公式サイト",
+  description: "メンズエステの公式サイト。セラピスト、出勤、料金、アクセスを掲載。",
+  openGraph: {
+    title: "トップ | メンズエステ公式サイト",
+    description: "メンズエステの公式サイト。セラピスト、出勤、料金、アクセスを掲載。",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "トップ | メンズエステ公式サイト",
+    description: "メンズエステの公式サイト。セラピスト、出勤、料金、アクセスを掲載。",
+  },
+};
 
 export default function Home() {
   return (

@@ -1,5 +1,21 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
+
+export const metadata: Metadata = {
+  title: "セラピスト一覧 | メンズエステ公式サイト",
+  description: "在籍セラピスト一覧と外部予約リンク。",
+  openGraph: {
+    title: "セラピスト一覧 | メンズエステ公式サイト",
+    description: "在籍セラピスト一覧と外部予約リンク。",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "セラピスト一覧 | メンズエステ公式サイト",
+    description: "在籍セラピスト一覧と外部予約リンク。",
+  },
+}
 
 type TherapistCard = {
   id: string
