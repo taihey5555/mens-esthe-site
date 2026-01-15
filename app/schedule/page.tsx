@@ -45,11 +45,12 @@ type RoomRow = {
 export default async function SchedulePage({
   searchParams,
 }: {
-  searchParams?: { room?: string }
+  searchParams?: Promise<{ room?: string }>
 }) {
   const supabase = getSupabase()
   const todayStartUtc = getTodayStartUtcISOString()
-  const selectedRoomId = searchParams?.room ?? "all"
+  const resolvedSearchParams = await searchParams
+  const selectedRoomId = resolvedSearchParams?.room ?? "all"
 
   const roomsPromise = supabase
     .from("rooms")

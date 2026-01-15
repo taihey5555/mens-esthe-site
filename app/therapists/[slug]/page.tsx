@@ -33,8 +33,9 @@ type ShiftRow = {
 export default async function TherapistDetailPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
+  const { slug } = await params
   const supabase = getSupabase()
   const todayStartUtc = getTodayStartUtcISOString()
 
@@ -43,7 +44,7 @@ export default async function TherapistDetailPage({
     .select(
       "id,name,slug,main_image_url,profile_text,booking_url,tags,is_newface,sns_urls"
     )
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .maybeSingle()
 
   const settingsQuery = supabase
@@ -61,7 +62,7 @@ export default async function TherapistDetailPage({
 
   if (therapistError) {
     console.error("Therapist detail fetch failed", {
-      slug: params.slug,
+      slug,
       error: therapistError.message,
     })
     return (
