@@ -8,6 +8,7 @@ import {
   getTodayStartUtcISOString,
 } from "@/lib/time"
 import { publicText } from "@/lib/i18n/ja"
+import PlaceholderImage from "@/components/ui/PlaceholderImage"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -130,24 +131,18 @@ export default async function TherapistDetailPage({
         </Link>
 
         <section className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-6 md:flex-row">
-            <div className="h-40 w-40 overflow-hidden rounded-md bg-zinc-100">
-              {therapist.main_image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={therapist.main_image_url}
-                  alt={therapist.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
-                  {publicText.common.noImage}
-                </div>
-              )}
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+            <div className="h-40 w-40 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+              <PlaceholderImage
+                src={therapist.main_image_url}
+                alt={therapist.name}
+                size={160}
+                className="h-full w-full object-cover"
+              />
             </div>
             <div className="flex-1 space-y-3">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-semibold text-zinc-900">
+                <h1 className="text-3xl font-semibold text-zinc-900">
                   {therapist.name}
                 </h1>
                 {therapist.is_newface && (

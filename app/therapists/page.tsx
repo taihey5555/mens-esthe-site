@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { getSupabase } from "@/lib/supabase/client"
 import { publicText } from "@/lib/i18n/ja"
+import PlaceholderImage from "@/components/ui/PlaceholderImage"
 
 export const metadata: Metadata = {
   title: publicText.metadata.therapists.title,
@@ -95,19 +96,13 @@ export default async function TherapistsPage() {
                 className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm"
               >
                 <div className="flex gap-4">
-                  <div className="h-24 w-24 overflow-hidden rounded-md bg-zinc-100">
-                    {therapist.main_image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={therapist.main_image_url}
-                        alt={therapist.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
-                        {publicText.common.noImage}
-                      </div>
-                    )}
+                  <div className="h-24 w-24 overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
+                    <PlaceholderImage
+                      src={therapist.main_image_url}
+                      alt={therapist.name}
+                      size={96}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
 
                   <div className="flex-1 space-y-2">
