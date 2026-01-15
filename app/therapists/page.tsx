@@ -35,6 +35,15 @@ type SiteSettingsRow = {
   global_booking_url: string | null
 }
 
+const filterChips = [
+  "すべて",
+  "マッサージ",
+  "スキンケア",
+  "ディープ",
+  "本日出勤",
+  "人気",
+]
+
 export default async function TherapistsPage() {
   const supabase = getSupabase()
 
@@ -66,94 +75,99 @@ export default async function TherapistsPage() {
       : null
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-10">
-      <div className="mx-auto w-full max-w-5xl space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">
-            {publicText.sections.therapists}
+    <div className="min-h-screen bg-rich-black text-warm-gray">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-black text-white md:text-4xl">
+            セラピスト一覧
           </h1>
-          <p className="text-sm text-zinc-600">
-            在籍セラピストと予約リンクをご案内します。
+          <p className="max-w-2xl text-white/60">
+            男性の癒やしと美を追求するプロフェッショナル。お気に入りの担当者をお選びください。
           </p>
-
-          <div className="text-xs text-zinc-500">
-            件数: {therapists?.length ?? 0}
-          </div>
           {debugInfo && (
-            <pre className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-white p-3 text-xs text-zinc-600">
+            <pre className="mt-4 whitespace-pre-wrap rounded-lg border border-white/10 bg-black/40 p-3 text-xs text-white/60">
               {JSON.stringify(debugInfo, null, 2)}
             </pre>
           )}
-        </header>
+        </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="mb-8 flex items-center gap-2 overflow-x-auto pb-2">
+          {filterChips.map((chip, index) => (
+            <button
+              key={chip}
+              type="button"
+              className={`flex h-9 shrink-0 items-center justify-center rounded-full px-5 text-sm font-semibold transition-all ${
+                index === 0
+                  ? "bg-primary text-white"
+                  : "border border-white/10 bg-white/5 text-white/70 hover:border-primary hover:text-primary"
+              }`}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {(therapists as TherapistCard[] | null)?.map((therapist) => {
             const bookingUrl = therapist.booking_url ?? globalBookingUrl
 
             return (
               <article
                 key={therapist.id}
-                className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm"
+                className="group flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-primary/50 hover:bg-white/10"
               >
-                <div className="flex gap-4">
-                  <div className="h-24 w-24 overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <div className="h-full w-full bg-white/10">
                     <PlaceholderImage
                       src={therapist.main_image_url}
                       alt={therapist.name}
-                      size={96}
-                      className="h-full w-full object-cover"
+                      size={600}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/therapists/${therapist.slug}`}
-                        className="text-lg font-semibold text-zinc-900"
+                  {therapist.is_newface && (
+                    <span className="absolute left-3 top-3 rounded bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                      新人
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-grow flex-col p-5">
+                  <div className="mb-3">
+                    <h2 className="text-lg font-bold text-white transition-colors group-hover:text-primary">
+                      {therapist.name}
+                    </h2>
+                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-widest text-primary/80">
+                      セラピスト
+                    </p>
+                  </div>
+                  <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-white/60">
+                    {therapist.profile_text || "プロフィール準備中です。"}
+                  </p>
+                  <div className="mt-auto flex flex-col gap-2">
+                    {bookingUrl ? (
+                      <a
+                        href={bookingUrl}
+                        className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary/90"
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        {therapist.name}
-                      </Link>
-
-                      {therapist.is_newface && (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                          {publicText.common.newFace}
-                        </span>
-                      )}
-                    </div>
-
-                    {therapist.profile_text && (
-                      <p className="line-clamp-3 text-sm text-zinc-600">
-                        {therapist.profile_text}
-                      </p>
+                        予約する
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="w-full cursor-not-allowed rounded-lg bg-white/10 px-4 py-2.5 text-sm font-bold text-white/40"
+                      >
+                        {publicText.common.bookingUnavailable}
+                      </button>
                     )}
-
-                    <div className="flex flex-wrap items-center gap-3">
-                      {bookingUrl ? (
-                        <a
-                          href={bookingUrl}
-                          className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {publicText.ctaBooking}
-                        </a>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled
-                          className="cursor-not-allowed rounded-md bg-zinc-200 px-3 py-2 text-sm font-medium text-zinc-500"
-                        >
-                          {publicText.common.bookingUnavailable}
-                        </button>
-                      )}
-
-                      <Link
-                        href={`/therapists/${therapist.slug}`}
-                        className="text-sm font-medium text-zinc-700 underline"
-                      >
-                        {publicText.common.viewDetails}
-                      </Link>
-                    </div>
+                    <Link
+                      href={`/therapists/${therapist.slug}`}
+                      className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-center text-sm font-semibold text-white/80 transition-colors hover:bg-white/10"
+                    >
+                      詳細を見る
+                    </Link>
                   </div>
                 </div>
               </article>
@@ -161,12 +175,72 @@ export default async function TherapistsPage() {
           })}
 
           {!therapists?.length && (
-            <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-              セラピストがありません。
+            <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-6 text-sm text-white/60">
+              {publicText.common.noData}
             </div>
           )}
         </div>
+
+        <div className="mt-12 mb-20 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/60 transition-colors hover:bg-white/10"
+          >
+            <span className="material-symbols-outlined text-lg">
+              chevron_left
+            </span>
+          </button>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white"
+          >
+            1
+          </button>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-sm font-medium text-white/60 transition-colors hover:bg-white/10"
+          >
+            2
+          </button>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-sm font-medium text-white/60 transition-colors hover:bg-white/10"
+          >
+            3
+          </button>
+          <span className="px-1 text-white/40">...</span>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-white/60 transition-colors hover:bg-white/10"
+          >
+            <span className="material-symbols-outlined text-lg">
+              chevron_right
+            </span>
+          </button>
+        </div>
+      </main>
+
+      <div className="fixed bottom-6 left-1/2 z-50 w-[90%] max-w-sm -translate-x-1/2 md:hidden">
+        {globalBookingUrl ? (
+          <a
+            href={globalBookingUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-bold text-white shadow-xl shadow-primary/30"
+          >
+            <span className="material-symbols-outlined">calendar_month</span>
+            予約する
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-white/10 py-4 font-bold text-white/40"
+          >
+            {publicText.ctaBookingDisabled}
+          </button>
+        )}
       </div>
-    </main>
+    </div>
   )
 }

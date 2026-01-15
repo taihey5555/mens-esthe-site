@@ -33,13 +33,13 @@ export default async function AccessPage() {
     .order("sort_order", { ascending: true })
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-10">
+    <main className="min-h-screen bg-rich-black px-6 py-10">
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">
+          <h1 className="text-2xl font-semibold text-white">
             {publicText.sections.access}
           </h1>
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm text-white/60">
             ルームの場所とアクセス方法をご案内します。
           </p>
         </header>
@@ -48,23 +48,23 @@ export default async function AccessPage() {
           {(rooms as RoomRow[] | null)?.map((room) => (
             <div
               key={room.id}
-              className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm"
+              className="rounded-lg border border-white/10 bg-white/5 p-5 shadow-sm"
             >
-              <div className="text-base font-semibold text-zinc-900">
+              <div className="text-base font-semibold text-white">
                 {room.name}
               </div>
               {room.area && (
-                <div className="text-sm text-zinc-600">{room.area}</div>
+                <div className="text-sm text-white/60">{room.area}</div>
               )}
               {room.access_note && (
-                <p className="mt-2 text-sm text-zinc-600">
+                <p className="mt-2 text-sm text-white/60">
                   {room.access_note}
                 </p>
               )}
             </div>
           ))}
           {!rooms?.length && (
-            <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
+            <div className="rounded-lg border border-dashed border-white/10 bg-white/5 p-6 text-sm text-white/60">
               ルーム情報がありません。
             </div>
           )}

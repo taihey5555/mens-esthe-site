@@ -33,13 +33,13 @@ export default async function PricingPage() {
     .order("sort_order", { ascending: true })
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-10">
+    <main className="min-h-screen bg-rich-black px-6 py-10">
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-900">
+          <h1 className="text-2xl font-semibold text-white">
             {publicText.sections.pricing}
           </h1>
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm text-white/60">
             コース料金と施術時間のご案内です。
           </p>
         </header>
@@ -48,23 +48,23 @@ export default async function PricingPage() {
           {(courses as CourseRow[] | null)?.map((course) => (
             <div
               key={course.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-5 py-4 shadow-sm"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-5 py-4 shadow-sm"
             >
               <div>
-                <div className="text-base font-semibold text-zinc-900">
+                <div className="text-base font-semibold text-white">
                   {course.name}
                 </div>
-                <div className="text-sm text-zinc-600">
+                <div className="text-sm text-white/60">
                   {course.duration_min} 分
                 </div>
               </div>
-              <div className="text-base font-semibold text-zinc-900">
+              <div className="text-base font-semibold text-white">
                 {course.price.toLocaleString()} {publicText.common.priceSuffix}
               </div>
             </div>
           ))}
           {!courses?.length && (
-            <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
+            <div className="rounded-lg border border-dashed border-white/10 bg-white/5 p-6 text-sm text-white/60">
               料金情報がありません。
             </div>
           )}
