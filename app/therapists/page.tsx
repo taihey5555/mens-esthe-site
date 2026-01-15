@@ -24,26 +24,47 @@ type TherapistCard = {
   main_image_url: string | null
   profile_text: string | null
   booking_url: string | null
-  sort_order: number
-  is_newface: boolean
+  sort_order: number | null
+  is_newface: boolean | null
+  is_active: boolean
+}
+
+type SiteSettingsRow = {
+  global_booking_url: string | null
 }
 
 export default async function TherapistsPage() {
   const supabase = getSupabase()
-  const [{ data: therapists }, { data: settings }] = await Promise.all([
+
+  const [
+    { data: therapists, error: therapistsError },
+    { data: settings, error: settingsError },
+  ] = await Promise.all([
     supabase
       .from("therapists")
       .select(
-        "id,name,slug,main_image_url,profile_text,booking_url,sort_order,is_newface"
+        "id,name,slug,main_image_url,profile_text,booking_url,sort_order,is_newface,is_active"
       )
-      .order("sort_order", { ascending: true }),
-    supabase
-      .from("site_settings")
-      .select("global_booking_url")
-      .limit(1),
+      // 公開一覧なので is_active=true のみ
+      .eq("is_active", true)
+      // 並びを安定させる
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true }),
+    supabase.from("site_settings").select("global_booking_url").limit(1),
   ])
 
-  const globalBookingUrl = settings?.[0]?.global_booking_url ?? null
+  const globalBookingUrl =
+    (settings as SiteSettingsRow[] | null)?.[0]?.global_booking_url ?? null
+
+  // ここが一番大事：RLSや権限で落ちてる場合はエラーが出る
+  const debugInfo =
+    therapistsError || settingsError
+      ? {
+          therapistsError: therapistsError?.message ?? null,
+          settingsError: settingsError?.message ?? null,
+          therapistsCount: therapists?.length ?? 0,
+        }
+      : null
 
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
@@ -53,11 +74,22 @@ export default async function TherapistsPage() {
           <p className="text-sm text-zinc-600">
             Browse available therapists and book via external link.
           </p>
+
+          {/* デバッグ（本番で邪魔なら後で消してOK） */}
+          <div className="text-xs text-zinc-500">
+            count: {therapists?.length ?? 0}
+          </div>
+          {debugInfo && (
+            <pre className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-white p-3 text-xs text-zinc-600">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          )}
         </header>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {(therapists as TherapistCard[] | null)?.map((therapist) => {
             const bookingUrl = therapist.booking_url ?? globalBookingUrl
+
             return (
               <article
                 key={therapist.id}
@@ -78,6 +110,7 @@ export default async function TherapistsPage() {
                       </div>
                     )}
                   </div>
+
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <Link
@@ -86,17 +119,20 @@ export default async function TherapistsPage() {
                       >
                         {therapist.name}
                       </Link>
+
                       {therapist.is_newface && (
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                           New
                         </span>
                       )}
                     </div>
+
                     {therapist.profile_text && (
                       <p className="line-clamp-3 text-sm text-zinc-600">
                         {therapist.profile_text}
                       </p>
                     )}
+
                     <div className="flex flex-wrap items-center gap-3">
                       {bookingUrl ? (
                         <a
@@ -116,6 +152,7 @@ export default async function TherapistsPage() {
                           Booking unavailable
                         </button>
                       )}
+
                       <Link
                         href={`/therapists/${therapist.slug}`}
                         className="text-sm font-medium text-zinc-700 underline"
@@ -128,6 +165,7 @@ export default async function TherapistsPage() {
               </article>
             )
           })}
+
           {!therapists?.length && (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
               No therapists available yet.
