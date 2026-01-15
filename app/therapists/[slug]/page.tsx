@@ -3,6 +3,9 @@ import { notFound } from "next/navigation"
 import { getSupabase } from "@/lib/supabase/client"
 import { formatJstDateTime, formatJstTime, getTodayStartUtcISOString } from "@/lib/time"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 type TherapistDetail = {
   id: string
   name: string
@@ -48,21 +51,54 @@ export default async function TherapistDetailPage({
     .select("global_booking_url")
     .limit(1)
 
-  const [{ data: therapist }, { data: settings }] = await Promise.all([
+  const [
+    { data: therapist, error: therapistError },
+    { data: settings, error: settingsError },
+  ] = await Promise.all([
     therapistQuery,
     settingsQuery,
   ])
+
+  if (therapistError) {
+    console.error("Therapist detail fetch failed", {
+      slug: params.slug,
+      error: therapistError.message,
+    })
+    return (
+      <main className="min-h-screen bg-zinc-50 px-6 py-10">
+        <div className="mx-auto w-full max-w-3xl space-y-4 rounded-lg border border-red-200 bg-white p-6 text-sm text-red-700 shadow-sm">
+          <h1 className="text-lg font-semibold text-red-700">
+            データ取得に失敗しました
+          </h1>
+          <p>時間をおいて再度お試しください。</p>
+        </div>
+      </main>
+    )
+  }
 
   if (!therapist) {
     notFound()
   }
 
-  const { data: shifts } = await supabase
+  if (settingsError) {
+    console.error("Site settings fetch failed", {
+      error: settingsError.message,
+    })
+  }
+
+  const { data: shifts, error: shiftsError } = await supabase
     .from("shifts")
     .select("id,start_at,end_at,note,room:rooms(id,name,area)")
     .eq("therapist_id", therapist.id)
     .gte("start_at", todayStartUtc)
     .order("start_at", { ascending: true })
+
+  if (shiftsError) {
+    console.error("Shift fetch failed", {
+      therapistId: therapist.id,
+      error: shiftsError.message,
+    })
+  }
 
   const globalBookingUrl = settings?.[0]?.global_booking_url ?? null
   const bookingUrl = therapist.booking_url ?? globalBookingUrl
@@ -146,6 +182,11 @@ export default async function TherapistDetailPage({
           <h2 className="text-lg font-semibold text-zinc-900">
             Upcoming shifts
           </h2>
+          {shiftsError && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+              出勤情報の取得に失敗しました。
+            </div>
+          )}
           <div className="space-y-3">
             {(shifts as ShiftRow[] | null)?.map((shift) => (
               <div
