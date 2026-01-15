@@ -31,3 +31,37 @@ export function formatJstTime(isoString: string): string {
     minute: "2-digit",
   })
 }
+
+export function toJstDatetimeLocalValue(isoString: string): string {
+  if (!isoString) return ""
+  const date = new Date(isoString)
+  const jstMs = date.getTime() + JST_OFFSET_MINUTES * 60 * 1000
+  const jstDate = new Date(jstMs)
+  const yyyy = jstDate.getUTCFullYear()
+  const mm = String(jstDate.getUTCMonth() + 1).padStart(2, "0")
+  const dd = String(jstDate.getUTCDate()).padStart(2, "0")
+  const hh = String(jstDate.getUTCHours()).padStart(2, "0")
+  const min = String(jstDate.getUTCMinutes()).padStart(2, "0")
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`
+}
+
+export function jstDatetimeLocalToUtcIso(value: string): string {
+  if (!value) return ""
+  const [datePart, timePart] = value.split("T")
+  if (!datePart || !timePart) return ""
+  const [year, month, day] = datePart.split("-").map(Number)
+  const [hour, minute] = timePart.split(":").map(Number)
+  if (
+    Number.isNaN(year) ||
+    Number.isNaN(month) ||
+    Number.isNaN(day) ||
+    Number.isNaN(hour) ||
+    Number.isNaN(minute)
+  ) {
+    return ""
+  }
+  const utcMs =
+    Date.UTC(year, month - 1, day, hour, minute, 0) -
+    JST_OFFSET_MINUTES * 60 * 1000
+  return new Date(utcMs).toISOString()
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getSupabase } from "@/lib/supabase/client"
-import { formatJstDateTime } from "@/lib/time"
+import { formatJstDateTime, jstDatetimeLocalToUtcIso, toJstDatetimeLocalValue } from "@/lib/time"
 
 type ShiftRow = {
   id: string
@@ -94,8 +94,8 @@ export default function AdminShiftsPage() {
       id: item.id,
       therapist_id: item.therapist?.id ?? "",
       room_id: item.room?.id ?? "",
-      start_at: item.start_at,
-      end_at: item.end_at,
+      start_at: toJstDatetimeLocalValue(item.start_at),
+      end_at: toJstDatetimeLocalValue(item.end_at),
       note: item.note ?? "",
       is_active: item.is_active,
     })
@@ -117,11 +117,19 @@ export default function AdminShiftsPage() {
     setSaving(true)
     setError(null)
     const supabase = getSupabase()
+    const startIso = jstDatetimeLocalToUtcIso(form.start_at)
+    const endIso = jstDatetimeLocalToUtcIso(form.end_at)
+
+    if (!startIso || !endIso || new Date(endIso) <= new Date(startIso)) {
+      alert("End time must be after start time.")
+      setSaving(false)
+      return
+    }
     const payload = {
       therapist_id: form.therapist_id,
       room_id: form.room_id,
-      start_at: form.start_at,
-      end_at: form.end_at,
+      start_at: startIso,
+      end_at: endIso,
       note: form.note || null,
       is_active: Boolean(form.is_active),
     }
@@ -188,26 +196,26 @@ export default function AdminShiftsPage() {
             </select>
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">Start (ISO UTC)</span>
+            <span className="text-zinc-600">Start (JST)</span>
             <input
+              type="datetime-local"
               value={form.start_at}
               onChange={(event) =>
                 setForm({ ...form, start_at: event.target.value })
               }
               className="w-full rounded-md border border-zinc-300 px-3 py-2"
-              placeholder="2025-01-01T10:00:00Z"
               required
             />
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">End (ISO UTC)</span>
+            <span className="text-zinc-600">End (JST)</span>
             <input
+              type="datetime-local"
               value={form.end_at}
               onChange={(event) =>
                 setForm({ ...form, end_at: event.target.value })
               }
               className="w-full rounded-md border border-zinc-300 px-3 py-2"
-              placeholder="2025-01-01T12:00:00Z"
               required
             />
           </label>
