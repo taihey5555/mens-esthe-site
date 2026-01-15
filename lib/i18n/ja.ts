@@ -22,8 +22,8 @@ export const adminText = {
     signOut: "ログアウト",
   },
   login: {
-    title: "管理ログイン",
-    description: "管理アカウントでログインしてください。",
+    title: "管理者ログイン",
+    description: "管理者アカウントでログインしてください。",
     email: "メールアドレス",
     password: "パスワード",
     submit: "ログイン",
@@ -31,7 +31,7 @@ export const adminText = {
   },
   dashboard: {
     title: "ダッシュボード",
-    description: "コンテンツの概要を確認できます。",
+    description: "コンテンツ概要を確認できます。",
   },
   therapists: {
     title: "セラピスト",
@@ -80,7 +80,7 @@ export const adminText = {
     lineUrl: "LINE URL",
     instagramUrl: "Instagram URL",
     xUrl: "X URL",
-    noticeText: "お知らせ文",
+    noticeText: "お知らせ",
     save: "保存",
     saving: "保存中...",
     loading: "設定を読み込み中...",
@@ -94,7 +94,7 @@ export const adminText = {
 
 export const publicText = {
   shopName: "メンズエステ Luna",
-  heroCatch: "心と身体をほどく、上質な癒しの時間。",
+  heroCatch: "疲れた身体をほどく、上質な癒しの時間。",
   heroNote: "当店は外部予約のみ対応です。",
   ctaBooking: "今すぐ予約",
   ctaBookingDisabled: "予約準備中",
@@ -124,6 +124,7 @@ export const publicText = {
     allRooms: "全てのルーム",
     filterByRoom: "ルームで絞り込み",
     priceSuffix: "円",
+    newFace: "新人",
   },
   messages: {
     fetchFailed: "データ取得に失敗しました。",
@@ -133,11 +134,11 @@ export const publicText = {
   metadata: {
     home: {
       title: "トップ | メンズエステ Luna",
-      description: "セラピスト、出勤、料金、アクセスを掲載しています。",
+      description: "セラピスト、出勤、料金、アクセスの情報を掲載しています。",
     },
     therapists: {
       title: "セラピスト一覧 | メンズエステ Luna",
-      description: "在籍セラピストの一覧と外部予約リンク。",
+      description: "在籍セラピスト一覧と外部予約リンク。",
     },
     schedule: {
       title: "出勤スケジュール | メンズエステ Luna",

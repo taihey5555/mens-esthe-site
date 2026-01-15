@@ -87,7 +87,7 @@ export default async function SchedulePage({
             {publicText.sections.schedule}
           </h1>
           <p className="text-sm text-zinc-600">
-            本日以降の出勤スケジュールを表示しています。
+            本日以降の出勤スケジュールを掲載しています。
           </p>
         </header>
 

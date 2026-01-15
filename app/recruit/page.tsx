@@ -33,7 +33,7 @@ export default function RecruitPage() {
         </ul>
 
         <p className="pt-2">
-          応募・お問い合わせは外部予約の連絡先からお願いします。
+          応募・お問い合わせは外部予約または連絡先からお願いします。
         </p>
       </div>
     </main>

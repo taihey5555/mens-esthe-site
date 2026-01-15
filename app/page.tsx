@@ -139,7 +139,7 @@ export default async function Home() {
                     </h3>
                     {therapist.is_newface && (
                       <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                        新人
+                        {publicText.common.newFace}
                       </span>
                     )}
                   </div>
@@ -199,7 +199,7 @@ export default async function Home() {
               {publicText.sections.recruit}
             </h3>
             <p className="mt-2 text-sm text-zinc-600">
-              セラピスト募集の詳細はこちらから。
+              セラピスト募集の詳細はこちら。
             </p>
             <Link
               href="/recruit"

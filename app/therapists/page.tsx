@@ -72,7 +72,7 @@ export default async function TherapistsPage() {
             {publicText.sections.therapists}
           </h1>
           <p className="text-sm text-zinc-600">
-            在籍セラピストと予約リンクをご確認ください。
+            在籍セラピストと予約リンクをご案内します。
           </p>
 
           <div className="text-xs text-zinc-500">
@@ -121,7 +121,7 @@ export default async function TherapistsPage() {
 
                       {therapist.is_newface && (
                         <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                          新人
+                          {publicText.common.newFace}
                         </span>
                       )}
                     </div>
@@ -167,7 +167,7 @@ export default async function TherapistsPage() {
 
           {!therapists?.length && (
             <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
-              セラピストの情報がありません。
+              セラピストがありません。
             </div>
           )}
         </div>
