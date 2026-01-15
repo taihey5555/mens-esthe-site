@@ -1,55 +1,71 @@
-1) Bugfix: セラピスト詳細が表示されない（最優先）
+次にやるべき1行: 管理画面で本番データを入力 → 公開ページで確認
 
-目的：`/therapists/[slug]` が本番で確実に表示される状態にする。
-対応：原因の洗い出しから修正、本番確認まで完了させる。
+## Production content
+- 推奨フロー: 管理画面で入力 → 公開ページで確認
+- `docs/seed.sql` は dev/local 用（本番置換しない）
+- 対象テーブル: `therapists` / `rooms` / `courses` / 出勤情報（`shifts`） / `site_settings`
 
-チェック観点：
-- `therapists.slug` と URL の slug が一致しているか
-- 詳細側のクエリ条件（`eq("slug", slug)` / `is_active`）の不整合
-- RLS（anon の SELECT が詳細ページ側クエリで弾かれていないか）
-- Next.js のキャッシュ/SSG が原因で 404/空表示になっていないか（動的化 or noStore）
-- 取得カラム不足（tags 等）や型/例外で落ちていないか
+## Settings 安定化（`site_settings`）
+0行なら1行作成し、以後は upsert で更新する。Supabase SQL Editor で実行。
 
-Done条件：
-- 本番URLで `https://<domain>/therapists/<slug>` が表示される
-- 404/空表示にならない
-- `npm run build` が通る
+```sql
+-- 0行なら1行作成
+insert into public.site_settings (id)
+select gen_random_uuid()
+where not exists (select 1 from public.site_settings);
 
-2) Production content（見た目を完成させる）
+-- 既存1行を upsert で更新
+insert into public.site_settings (
+  id,
+  global_booking_url,
+  line_url,
+  x_url,
+  instagram_url,
+  notice_text
+)
+select
+  id,
+  'https://example.com/booking',
+  'https://line.me/R/ti/p/example',
+  'https://x.com/example_store',
+  'https://instagram.com/example_store',
+  'ここにお知らせ文'
+from public.site_settings
+order by created_at
+limit 1
+on conflict (id) do update
+set
+  global_booking_url = excluded.global_booking_url,
+  line_url = excluded.line_url,
+  x_url = excluded.x_url,
+  instagram_url = excluded.instagram_url,
+  notice_text = excluded.notice_text;
+```
 
-目的：seedではなく「運用データ」で全ページがそれっぽく成立する状態にする。
-対応：Admin から投入（または SQL でも可）
+## 管理画面入力テンプレ
+見出しごとにコピペして使う（スラッグは `slug`）。
 
-投入最低ライン：
-- site_settings: global_booking_url / SNS / notice_text
-- rooms: 1+
-- courses: 3+
-- therapists: 3+
-- shifts: 7〜14日分
+### rooms
+- 最低ライン: name / area / access_note / sort_order / is_active
+- 任意（店っぽさUP）: 画像URL / 補足説明
 
-Done条件：
-- 公開ページ（`/` `/therapists` `/schedule` `/pricing` `/access` `/recruit`）が本番データで表示される
+### therapists
+- 最低ライン: name / `slug` / profile_text / tags / sns_urls / is_newface / is_active / sort_order
+- 任意（店っぽさUP）: メイン画像URL / サブ画像URL / 推しポイント
 
-3) 画像運用方針を決める（最後でOK）
+### courses
+- 最低ライン: name / duration_min / price / sort_order / is_active
+- 任意（店っぽさUP）: 注意書き（指名料/延長/キャンセル）
 
-目的：画像URLの管理を迷わない形に固定する。
-選択肢：
-- A) Supabase Storage にアップロードしてURL管理
-- B) 外部URL運用（最速・コストゼロ）
+### 出勤情報（`shifts`）
+- 最低ライン: therapist_id / room_id / start_at / end_at / is_active
+- 任意（店っぽさUP）: note / 昼夜タグ / 人気タグ
 
-Done条件：
-- 「どの画面で・どの項目に・どの形式で保存するか」が決まっている
+### site_settings
+- 最低ライン: global_booking_url / line_url / x_url / instagram_url / notice_text
+- 任意（店っぽさUP）: OGP 追加文 / 注意事項
 
-4) 公開ページの日本語コピー調整（今回）
-
-目的：トップ刷新の文言と説明文を日本語へ統一し、英語残りを解消する。
-対象：`/` `/therapists` `/therapists/[slug]` `/schedule` `/pricing` `/access` `/recruit` + Header
-
-Done条件：
-- 公開ページに英語が残っていない
-- トップ刷新の日本語コピーが反映されている
-
-Notes（運用ルール）
-- secrets は絶対 commit しない（`.env.local` / service_role）
-- クライアントは `NEXT_PUBLIC_SUPABASE_*` のみ使用
-- UI からの DB 書き込みは admin のみ（RLS で強制）
+## Done条件
+- 公開ページ（`/` / `/therapists` / `/schedule` / `/pricing` / `/access` / `/recruit`）が本番データで成立
+- seed 表示が残っていない
+- Settings 保存後にリロードしても値が残る
