@@ -7,6 +7,7 @@ import {
   getTodayStartUtcISOString,
 } from "@/lib/time"
 import { publicText } from "@/lib/i18n/ja"
+import PlaceholderImage from "@/components/ui/PlaceholderImage"
 
 export const metadata: Metadata = {
   title: publicText.metadata.schedule.title,
@@ -32,6 +33,7 @@ type ShiftRow = {
     name: string
     slug: string
     main_image_url: string | null
+    booking_url: string | null
   } | null
   room: {
     id: string
@@ -66,10 +68,15 @@ export default async function SchedulePage({
     .select("id,name,area,sort_order")
     .order("sort_order", { ascending: true })
 
+  const settingsPromise = supabase
+    .from("site_settings")
+    .select("global_booking_url")
+    .limit(1)
+
   const shiftsQuery = supabase
     .from("shifts")
     .select(
-      "id,start_at,end_at,therapist:therapists(id,name,slug,main_image_url),room:rooms(id,name,area)"
+      "id,start_at,end_at,therapist:therapists(id,name,slug,main_image_url,booking_url),room:rooms(id,name,area)"
     )
     .gte("start_at", todayStartUtc)
     .lt("start_at", endDateIso)
@@ -80,10 +87,10 @@ export default async function SchedulePage({
     shiftsQuery.eq("room_id", selectedRoomId)
   }
 
-  const [{ data: rooms }, { data: shifts }] = await Promise.all([
-    roomsPromise,
-    shiftsQuery,
-  ])
+  const [{ data: rooms }, { data: settings }, { data: shifts }] =
+    await Promise.all([roomsPromise, settingsPromise, shiftsQuery])
+
+  const globalBookingUrl = settings?.[0]?.global_booking_url ?? null
 
   const getJstParts = (date: Date) => {
     const formatter = new Intl.DateTimeFormat("ja-JP", {
@@ -208,29 +215,68 @@ export default async function SchedulePage({
                     key={shift.id}
                     className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="text-sm font-semibold text-zinc-900">
-                        {formatJstTime(shift.start_at)} -{" "}
-                        {formatJstTime(shift.end_at)}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                      <div className="h-28 w-28 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50">
+                        <PlaceholderImage
+                          src={shift.therapist?.main_image_url}
+                          alt={shift.therapist?.name ?? publicText.common.noImage}
+                          size={112}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
-                      <div className="text-sm text-zinc-600">
-                        {shift.room?.name ?? publicText.common.roomTbd}
-                        {shift.room?.area ? ` / ${shift.room.area}` : ""}
+                      <div className="flex-1 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="text-sm font-semibold text-zinc-900">
+                            {formatJstTime(shift.start_at)} -{" "}
+                            {formatJstTime(shift.end_at)}
+                          </div>
+                          <div className="text-sm text-zinc-600">
+                            {shift.room?.name ?? publicText.common.roomTbd}
+                            {shift.room?.area ? ` / ${shift.room.area}` : ""}
+                          </div>
+                        </div>
+                        <div>
+                          {shift.therapist ? (
+                            <Link
+                              href={`/therapists/${shift.therapist.slug}`}
+                              className="text-base font-semibold text-zinc-900 underline"
+                            >
+                              {shift.therapist.name}
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-zinc-500">
+                              {publicText.common.therapistTbd}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          {(() => {
+                            const bookingUrl =
+                              shift.therapist?.booking_url ?? globalBookingUrl
+                            if (!bookingUrl) {
+                              return (
+                                <button
+                                  type="button"
+                                  disabled
+                                  className="rounded-md bg-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-500"
+                                >
+                                  {publicText.ctaBookingDisabled}
+                                </button>
+                              )
+                            }
+                            return (
+                              <a
+                                href={bookingUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+                              >
+                                {publicText.ctaBooking}
+                              </a>
+                            )
+                          })()}
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-                      {shift.therapist ? (
-                        <Link
-                          href={`/therapists/${shift.therapist.slug}`}
-                          className="text-sm font-medium text-zinc-900 underline"
-                        >
-                          {shift.therapist.name}
-                        </Link>
-                      ) : (
-                        <span className="text-sm text-zinc-500">
-                          {publicText.common.therapistTbd}
-                        </span>
-                      )}
                     </div>
                   </div>
                 ))}
