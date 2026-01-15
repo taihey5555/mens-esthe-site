@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { getSupabase } from "@/lib/supabase/client"
-import { formatJstDateTime, jstDatetimeLocalToUtcIso, toJstDatetimeLocalValue } from "@/lib/time"
+import {
+  formatJstDateTime,
+  jstDatetimeLocalToUtcIso,
+  toJstDatetimeLocalValue,
+} from "@/lib/time"
+import { adminText } from "@/lib/i18n/ja"
 
 type ShiftRow = {
   id: string
@@ -102,7 +107,7 @@ export default function AdminShiftsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this shift?")) return
+    if (!confirm(adminText.shifts.deleteConfirm)) return
     const supabase = getSupabase()
     const { error } = await supabase.from("shifts").delete().eq("id", id)
     if (error) {
@@ -121,7 +126,7 @@ export default function AdminShiftsPage() {
     const endIso = jstDatetimeLocalToUtcIso(form.end_at)
 
     if (!startIso || !endIso || new Date(endIso) <= new Date(startIso)) {
-      alert("End time must be after start time.")
+      alert(adminText.shifts.timeInvalid)
       setSaving(false)
       return
     }
@@ -150,8 +155,12 @@ export default function AdminShiftsPage() {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-900">Shifts</h1>
-        <p className="text-sm text-zinc-600">Manage shift schedules.</p>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          {adminText.shifts.title}
+        </h1>
+        <p className="text-sm text-zinc-600">
+          {adminText.shifts.description}
+        </p>
       </header>
 
       <form
@@ -160,7 +169,7 @@ export default function AdminShiftsPage() {
       >
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">Therapist</span>
+            <span className="text-zinc-600">{adminText.shifts.therapist}</span>
             <select
               value={form.therapist_id}
               onChange={(event) =>
@@ -169,7 +178,7 @@ export default function AdminShiftsPage() {
               className="w-full rounded-md border border-zinc-300 px-3 py-2"
               required
             >
-              <option value="">Select therapist</option>
+              <option value="">{adminText.shifts.selectTherapist}</option>
               {therapists.map((therapist) => (
                 <option key={therapist.id} value={therapist.id}>
                   {therapist.name}
@@ -178,7 +187,7 @@ export default function AdminShiftsPage() {
             </select>
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">Room</span>
+            <span className="text-zinc-600">{adminText.shifts.room}</span>
             <select
               value={form.room_id}
               onChange={(event) =>
@@ -187,7 +196,7 @@ export default function AdminShiftsPage() {
               className="w-full rounded-md border border-zinc-300 px-3 py-2"
               required
             >
-              <option value="">Select room</option>
+              <option value="">{adminText.shifts.selectRoom}</option>
               {rooms.map((room) => (
                 <option key={room.id} value={room.id}>
                   {room.name}
@@ -196,7 +205,7 @@ export default function AdminShiftsPage() {
             </select>
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">Start (JST)</span>
+            <span className="text-zinc-600">{adminText.shifts.start}</span>
             <input
               type="datetime-local"
               value={form.start_at}
@@ -208,7 +217,7 @@ export default function AdminShiftsPage() {
             />
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">End (JST)</span>
+            <span className="text-zinc-600">{adminText.shifts.end}</span>
             <input
               type="datetime-local"
               value={form.end_at}
@@ -220,7 +229,7 @@ export default function AdminShiftsPage() {
             />
           </label>
           <label className="space-y-1 text-sm md:col-span-2">
-            <span className="text-zinc-600">Note</span>
+            <span className="text-zinc-600">{adminText.shifts.note}</span>
             <input
               value={form.note}
               onChange={(event) => setForm({ ...form, note: event.target.value })}
@@ -235,7 +244,7 @@ export default function AdminShiftsPage() {
                 setForm({ ...form, is_active: event.target.checked })
               }
             />
-            <span>Active</span>
+            <span>{adminText.common.active}</span>
           </label>
         </div>
         {error && (
@@ -249,32 +258,36 @@ export default function AdminShiftsPage() {
             disabled={saving}
             className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {form.id ? "Update" : "Create"}
+            {form.id ? adminText.common.update : adminText.common.create}
           </button>
           <button
             type="button"
             onClick={() => setForm(emptyForm)}
             className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-700"
           >
-            Clear
+            {adminText.common.clear}
           </button>
         </div>
       </form>
 
       <div className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900">List</h2>
+        <h2 className="text-lg font-semibold text-zinc-900">
+          {adminText.common.list}
+        </h2>
         {loading ? (
-          <p className="mt-3 text-sm text-zinc-500">Loading...</p>
+          <p className="mt-3 text-sm text-zinc-500">
+            {adminText.common.loading}
+          </p>
         ) : (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="text-xs uppercase text-zinc-500">
                 <tr>
-                  <th className="py-2">Time (JST)</th>
-                  <th className="py-2">Therapist</th>
-                  <th className="py-2">Room</th>
-                  <th className="py-2">Active</th>
-                  <th className="py-2">Actions</th>
+                  <th className="py-2">{adminText.shifts.timeJst}</th>
+                  <th className="py-2">{adminText.shifts.therapist}</th>
+                  <th className="py-2">{adminText.shifts.room}</th>
+                  <th className="py-2">{adminText.common.active}</th>
+                  <th className="py-2">{adminText.common.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200">
@@ -286,7 +299,9 @@ export default function AdminShiftsPage() {
                     </td>
                     <td className="py-2">{item.therapist?.name ?? "-"}</td>
                     <td className="py-2">{item.room?.name ?? "-"}</td>
-                    <td className="py-2">{item.is_active ? "Yes" : "No"}</td>
+                    <td className="py-2">
+                      {item.is_active ? adminText.common.yes : adminText.common.no}
+                    </td>
                     <td className="py-2">
                       <div className="flex flex-wrap gap-2">
                         <button
@@ -294,14 +309,14 @@ export default function AdminShiftsPage() {
                           onClick={() => handleEdit(item)}
                           className="text-xs font-semibold text-zinc-700 underline"
                         >
-                          Edit
+                          {adminText.common.edit}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(item.id)}
                           className="text-xs font-semibold text-red-600 underline"
                         >
-                          Delete
+                          {adminText.common.delete}
                         </button>
                       </div>
                     </td>
@@ -310,7 +325,7 @@ export default function AdminShiftsPage() {
                 {!items.length && (
                   <tr>
                     <td className="py-3 text-sm text-zinc-500" colSpan={5}>
-                      No shifts found.
+                      {adminText.shifts.noItems}
                     </td>
                   </tr>
                 )}

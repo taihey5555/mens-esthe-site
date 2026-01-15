@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getSupabase } from "@/lib/supabase/client"
+import { adminText } from "@/lib/i18n/ja"
 
 type SettingsRow = {
   id: string
@@ -83,14 +84,20 @@ export default function AdminSettingsPage() {
   }
 
   if (loading) {
-    return <p className="text-sm text-zinc-500">Loading settings...</p>
+    return (
+      <p className="text-sm text-zinc-500">{adminText.settings.loading}</p>
+    )
   }
 
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-900">Settings</h1>
-        <p className="text-sm text-zinc-600">Update global links.</p>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          {adminText.settings.title}
+        </h1>
+        <p className="text-sm text-zinc-600">
+          {adminText.settings.description}
+        </p>
       </header>
 
       <form
@@ -99,7 +106,9 @@ export default function AdminSettingsPage() {
       >
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-1 text-sm md:col-span-2">
-            <span className="text-zinc-600">Global booking URL</span>
+            <span className="text-zinc-600">
+              {adminText.settings.globalBookingUrl}
+            </span>
             <input
               value={form.global_booking_url ?? ""}
               onChange={(event) =>
@@ -109,7 +118,7 @@ export default function AdminSettingsPage() {
             />
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">LINE URL</span>
+            <span className="text-zinc-600">{adminText.settings.lineUrl}</span>
             <input
               value={form.line_url ?? ""}
               onChange={(event) =>
@@ -119,7 +128,9 @@ export default function AdminSettingsPage() {
             />
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">Instagram URL</span>
+            <span className="text-zinc-600">
+              {adminText.settings.instagramUrl}
+            </span>
             <input
               value={form.instagram_url ?? ""}
               onChange={(event) =>
@@ -129,7 +140,7 @@ export default function AdminSettingsPage() {
             />
           </label>
           <label className="space-y-1 text-sm">
-            <span className="text-zinc-600">X URL</span>
+            <span className="text-zinc-600">{adminText.settings.xUrl}</span>
             <input
               value={form.x_url ?? ""}
               onChange={(event) =>
@@ -139,7 +150,9 @@ export default function AdminSettingsPage() {
             />
           </label>
           <label className="space-y-1 text-sm md:col-span-2">
-            <span className="text-zinc-600">Notice text</span>
+            <span className="text-zinc-600">
+              {adminText.settings.noticeText}
+            </span>
             <textarea
               value={form.notice_text ?? ""}
               onChange={(event) =>
@@ -160,7 +173,7 @@ export default function AdminSettingsPage() {
           disabled={saving}
           className="mt-4 rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
-          {saving ? "Saving..." : "Save settings"}
+          {saving ? adminText.settings.saving : adminText.settings.save}
         </button>
       </form>
     </section>

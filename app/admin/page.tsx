@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getSupabase } from "@/lib/supabase/client"
+import { adminText } from "@/lib/i18n/ja"
 
 type Counts = Record<string, number | null>
 
@@ -39,8 +40,12 @@ export default function AdminDashboardPage() {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-900">Dashboard</h1>
-        <p className="text-sm text-zinc-600">Quick overview of content.</p>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          {adminText.dashboard.title}
+        </h1>
+        <p className="text-sm text-zinc-600">
+          {adminText.dashboard.description}
+        </p>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -4,15 +4,16 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { getSupabase } from "@/lib/supabase/client"
+import { adminText } from "@/lib/i18n/ja"
 
 type Status = "checking" | "unauthenticated" | "forbidden" | "ready"
 
 const navLinks = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/therapists", label: "Therapists" },
-  { href: "/admin/courses", label: "Courses" },
-  { href: "/admin/shifts", label: "Shifts" },
-  { href: "/admin/settings", label: "Settings" },
+  { href: "/admin", label: adminText.nav.dashboard },
+  { href: "/admin/therapists", label: adminText.nav.therapists },
+  { href: "/admin/courses", label: adminText.nav.courses },
+  { href: "/admin/shifts", label: adminText.nav.shifts },
+  { href: "/admin/settings", label: adminText.nav.settings },
 ]
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -60,7 +61,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   if (status === "checking") {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-zinc-500">
-        Checking access...
+        {adminText.adminShell.checking}
       </div>
     )
   }
@@ -70,16 +71,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <div className="flex min-h-screen items-center justify-center px-6">
         <div className="w-full max-w-md rounded-lg border border-zinc-200 bg-white p-6 text-center shadow-sm">
           <h1 className="text-lg font-semibold text-zinc-900">
-            403 Forbidden
+            {adminText.adminShell.forbiddenTitle}
           </h1>
           <p className="mt-2 text-sm text-zinc-600">
-            You do not have permission to access this page.
+            {adminText.adminShell.forbiddenBody}
           </p>
           <Link
             href="/"
             className="mt-4 inline-flex text-sm font-medium text-zinc-900 underline"
           >
-            Back to site
+            {adminText.common.backToSite}
           </Link>
         </div>
       </div>
@@ -116,7 +117,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               onClick={handleSignOut}
               className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
             >
-              Sign out
+              {adminText.common.signOut}
             </button>
           </div>
         </div>

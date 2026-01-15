@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getSupabase } from "@/lib/supabase/client"
+import { adminText } from "@/lib/i18n/ja"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -44,14 +45,16 @@ export default function LoginPage() {
         className="w-full max-w-sm space-y-4 rounded-lg border border-zinc-200 bg-white p-6 shadow-sm"
       >
         <div>
-          <h1 className="text-xl font-semibold text-zinc-900">Admin Login</h1>
+          <h1 className="text-xl font-semibold text-zinc-900">
+            {adminText.login.title}
+          </h1>
           <p className="mt-1 text-sm text-zinc-600">
-            Sign in with your admin account.
+            {adminText.login.description}
           </p>
         </div>
 
         <label className="block space-y-1 text-sm">
-          <span className="text-zinc-600">Email</span>
+          <span className="text-zinc-600">{adminText.login.email}</span>
           <input
             type="email"
             required
@@ -62,7 +65,7 @@ export default function LoginPage() {
         </label>
 
         <label className="block space-y-1 text-sm">
-          <span className="text-zinc-600">Password</span>
+          <span className="text-zinc-600">{adminText.login.password}</span>
           <input
             type="password"
             required
@@ -83,7 +86,7 @@ export default function LoginPage() {
           disabled={loading}
           className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? adminText.login.submitting : adminText.login.submit}
         </button>
       </form>
     </main>
